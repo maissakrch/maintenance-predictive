@@ -1,0 +1,21 @@
+# Mac
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+*.pkl
+
+# Environnement virtuel
+venv/
+
+# VS Code
+.vscode/
+
+# Données et modèles (à versionner manuellement si besoin)
+data/raw/
+data/cleaned/
+models/
