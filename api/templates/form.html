@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prédiction de RUL</title>
+</head>
+<body>
+    <h1>Prédiction de la durée de vie restante</h1>
+    <form method="POST" action="/predict_web">
+        {% for i in range(20) %}
+            <label>Feature {{ i + 1 }}:</label>
+            <input type="number" step="any" name="f{{ i }}" required><br>
+        {% endfor %}
+        <input type="submit" value="Prédire">
+    </form>
+</body>
+</html>
