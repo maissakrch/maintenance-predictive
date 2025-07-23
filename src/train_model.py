@@ -1,15 +1,13 @@
 import pandas as pd
 import numpy as np
+import os
+import joblib
+import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-import joblib
-import os
-
-
 
 def load_data(_):
-    # Aller chercher le fichier en chemin absolu dynamique
     BASE_DIR = os.path.dirname(os.path.dirname(__file__))
     data_path = os.path.join(BASE_DIR, "data", "cleaned", "train_FD001_cleaned.csv")
     df = pd.read_csv(data_path)
@@ -17,7 +15,6 @@ def load_data(_):
     X = df.drop(columns=["RUL", "unit", "cycle", "max_cycle"])
     y = df["RUL"]
     return train_test_split(X, y, test_size=0.2, random_state=42)
-
 
 def train_model(X_train, y_train):
     model = RandomForestRegressor(n_estimators=100, random_state=42)
@@ -48,3 +45,18 @@ if __name__ == "__main__":
 
     print("[💾] Sauvegarde du modèle...")
     save_model(model, "../models/random_forest_rul.pkl")
+
+    # 🔍 Génération du graphe réel vs prédit
+    y_pred = model.predict(X_test)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(y_test[:100].values, label='Valeurs réelles')
+    plt.plot(y_pred[:100], label='Valeurs prédites')
+    plt.xlabel('Échantillons')
+    plt.ylabel('RUL (nombre de cycles restants)')
+    plt.title('Comparaison Réel vs Prédit')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("rapport/graph_prediction_vs_reality.png")
+    plt.show()
