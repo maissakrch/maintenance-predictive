@@ -1,38 +1,35 @@
-import pandas as pd
 import dash
-from dash import dcc, html
+from dash import dcc, html, Input, Output
+import pandas as pd
 import plotly.express as px
-import dash_auth
 
+# Chargement des données
+df = pd.read_csv('data/cleaned/train_FD001_cleaned.csv')
 
-# Charger les prédictions
-df = pd.read_csv("data/cleaned/train_FD001_cleaned.csv")
-
-# Initialiser l'app Dash
+# Création du dashboard
 app = dash.Dash(__name__)
 
-VALID_USERNAME_PASSWORD_PAIRS = {
-    'admin': 'password123'
-}
+# Graphique simple : Histogramme du nombre de cycles par moteur
+fig = px.histogram(df, x='cycle', nbins=50, title='Distribution des cycles')
 
-auth = dash_auth.BasicAuth(
-    app,
-    VALID_USERNAME_PASSWORD_PAIRS
-)
+app.layout = html.Div([
+    html.H1("Dashboard Maintenance Prédictive"),
 
+    dcc.Graph(figure=fig),
 
-# Exemple de figure : distribution du cycle de vie
-fig = px.histogram(df, x='RUL', nbins=50, title='Distribution de la Remaining Useful Life (RUL)')
+    html.Br(),
 
-# Layout de l'application
-app.layout = html.Div(children=[
-    html.H1(children='Dashboard Maintenance Prédictive', style={'textAlign': 'center'}),
-    html.Div(children='Analyse de la vie restante des moteurs à partir du dataset FD001.'),
-    dcc.Graph(
-        id='rul-distribution',
-        figure=fig
-    )
+    html.Button("Télécharger CSV", id="download-btn"),
+    dcc.Download(id="download-dataframe-csv")
 ])
+
+@app.callback(
+    Output("download-dataframe-csv", "data"),
+    Input("download-btn", "n_clicks"),
+    prevent_initial_call=True
+)
+def download_csv(n_clicks):
+    return dcc.send_data_frame(df.to_csv, "donnees_maintenance.csv")
 
 if __name__ == '__main__':
     app.run(debug=True)
